@@ -1,0 +1,23 @@
+{
+  "name": "phonebook",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mudhaffar2/phonebook.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mudhaffar2/phonebook/issues"
+  },
+  "homepage": "https://github.com/mudhaffar2/phonebook#readme",
+  "dependencies": {
+    "nodemailer": "^4.1.3"
+  }
+}
+
