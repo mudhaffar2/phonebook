@@ -3,49 +3,17 @@
   <head>
     <meta charset="utf-8">
     <title>contacts</title>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="jquery-3.2.1.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+    <script type="text/javascript" src="bootstrap.min.js"></script>
   </head>
   <body>
 
-    <h1>gooooooooooooooooooo</h1>
-    <table id="table"><tr><th>First Name</th><th>Last Name</th><th>Email</th><th>Phone</th></tr></table>
+    <h1>CONTACTS LIST</h1>
+    <a href="add_contact.html">ADD NEW CONTACT</a>
+    <table id="table" class="table table-bordered table-striped"><thead class="thead-default"><tr><th>First Name</th><th>Last Name</th><th>Email</th><th>Phone</th><th>Hobbies</th></tr></thead></table>
 
+    <script type="text/javascript" src="contacts.js"></script>
   </body>
-  <script>
-    var table = document.querySelector('#table');
-    function getData (method, url) {
-      return new Promise(function(resolve, reject) {
-        var xhr = new XMLHttpRequest();
-        xhr.open(method, url, false);
-        xhr.onload = function() {
-          if (this.status >= 200 && this.status < 300) {
-            resolve(xhr.response);
-          } else {
-            reject({
-              status: this.status,
-              statusText: xhr.statusText
-            });
-          }
-        };
-        xhr.send();
-      });
-    }
-
-    getData('GET', 'http://localhost:8080/get_data').then(function(response) {
-      console.log(response);
-      
-      // var fname = reaponse.fname;
-      // var lname = reaponse.lname;
-      // var email = reaponse.email;
-      // var phone = reaponse.phone;
-      // var tr = `<tr>
-      //             <td>${fname}</td>
-      //             <td>${lname}</td>
-      //             <td>${email}</td>
-      //             <td>${phone}</td>
-      //           </tr>`;
-      // table.innerHTML += tr;
-    });
-  </script>
 </html>
 

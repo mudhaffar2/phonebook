@@ -1,130 +1,49 @@
 
-var objHttp = require('http');
-var objFS = require('fs');
-var objURL = require('url');
-var objQString = require('querystring');
+var express = require('express');
+var path = require('path');
+var bodyParser = require('body-parser');
+var fs = require('fs');
 
+var app = express();
 
-function sendResponse(code, response, content) {
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-	response.writeHead(code, {'content-type': 'text/html'});
+app.use(express.static(path.join(__dirname, 'libraries')));
+app.use(express.static(__dirname));
 
-	response.write(content);
+app.get('/', function(req, res) {
+  res.sendFile('contacts.html', {root: __dirname});
+});
 
-	response.end();
+app.get('/add_contact', function(req, res) {
+  res.sendFile('add_contact.html', {root: __dirname});
+});
 
-}
+app.get('/get_json', function(req, res) {
+  res.sendFile('data.json', {root: __dirname});
+});
 
-function processPost(request, response, callback) {
-
-  var queryData = '';
-
-  if(typeof callback !== 'function') return null;
-
-  if(request.method == 'POST') {
-
-    request.on('data', function(data) {
-
-      queryData += data;
-
-      if(queryData.length > 1e6) {
-
-        queryData = '';
-
-        response.writeHead(413, {'Content-Type': 'text/plain'}).end();
-
-        request.connection.destroy();
-
-      }
-
-    });
-
-    request.on('end', function() {
-
-      request.post = objQString.parse(queryData);
-
-      callback();
-
-    });
-
-  } else {
-
-    response.writeHead(405, {'Content-Type': 'text/plain'});
-
-    response.end();
-
+app.post('/new_contact', function(req, res) {
+  var newperson = {
+    'fname':req.body.fname,
+    'lname':req.body.lname,
+    'email':req.body.email,
+    'phone':req.body.phone,
+    'hobbies':req.body.hobbies
   }
-
-}
-
-function listContacts(request, response) {
-
-   response.writeHead(200, {'content-type': 'text/html'});
-
-   objFS.readFile('contacts.html', 'utf8', function(err, data) {
-
-     if (err) throw err;
-
-     response.write(data);
-
-     response.end();
-
-   });
-
-}
-
-function onRequest(request, response) {
-
-	var varURL = objURL.parse(request.url, true);
-
-	if(request.url == '/') {
-
-		response.writeHead(200, {'content-type': 'text/html'});
-
-		objFS.createReadStream('./add_contact.html').pipe(response);
-
-	} else if(varURL.pathname == '/new_contact') {
-
-		processPost(request, response, function() {
-
-      var jsonFile = {};
-
-      objFS.readFile('data.json', 'utf8', function(err, data) {
-
-        if (err) throw err;
-
-        jsonFile = JSON.parse(data);
-
-      });
-
-      console.log(jsonFile);
-      console.log(response.post);
-
-      // var newJson = jsonFile.push(request.post);
-
-      objFS.writeFile('data.json', JSON.stringify(request.post), 'utf8', function(err){
-
-       if (err) throw err;
-
-      });
-
+  fs.readFile('data.json', function(err, data) {
+    if (err) throw err;
+    var oldjson = JSON.parse(data);
+    oldjson.push(newperson);
+    fs.writeFile('data.json', JSON.stringify(oldjson), function(err) {
+      if (err) throw err;
+      console.log('json file written successfully!!');
     });
+  });
 
-	} else if(varURL.pathname == '/list_contacts') {
-    
-    listContacts(request, response);
-
-  } else {
-
-		sendResponse(404, response, 'Page not found!');
-
-	}
-
-}
-
-////////////////  listening to port 8080 (http server)
-
-objHttp.createServer(onRequest).listen(8080);
+  res.redirect('/');
+});
 
 
-
+app.listen(8080);
