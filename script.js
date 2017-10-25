@@ -24,8 +24,29 @@ app.get('/get_json', function(req, res) {
   res.sendFile('data.json', {root: __dirname});
 });
 
+app.get('/get_hobbies', function(req, res) {
+  res.sendFile('pidHobbies.json', {root: __dirname});
+});
+
+app.get('/user', function(req, res) {
+  var userId = req.query.pid;
+  fs.readFile('data.json', function(err, data) {
+    if (err) throw err;
+    var jsonFile = JSON.parse(data);
+    var recPidHobbies = jsonFile.filter(function(person){
+      return person.pid == userId;
+    });
+    var hobbiesList = recPidHobbies[0].hobbies.split('#');
+    fs.writeFile('pidHobbies.json', JSON.stringify(hobbiesList), function(err) {
+      if (err) throw err;
+    });
+  });
+  res.sendFile('hobbies.html', {root: __dirname});
+});
+
 app.post('/new_contact', function(req, res) {
   var newperson = {
+    'pid':Math.ceil(Math.random()*1000000),
     'fname':req.body.fname,
     'lname':req.body.lname,
     'email':req.body.email,
@@ -38,11 +59,10 @@ app.post('/new_contact', function(req, res) {
     oldjson.push(newperson);
     fs.writeFile('data.json', JSON.stringify(oldjson), function(err) {
       if (err) throw err;
-      console.log('json file written successfully!!');
     });
   });
 
-  res.redirect('/');
+  res.redirect('/add_contact');
 });
 
 
